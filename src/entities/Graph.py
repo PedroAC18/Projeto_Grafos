@@ -2,9 +2,6 @@ import igraph as ig
 import matplotlib.pyplot as plt
 from igraph import Graph
 
-from bridge_utils import *
-
-
 class MyGraph:
     def __init__(self, g=None, n_vrt=None, n_edges=None, directed=False, full=False, random=False, ring=False):
         if g is not None:
@@ -102,70 +99,8 @@ class MyGraph:
                 return False
         return True
 
-    def has_bridge_tarjan(self):
-        bridges = find_bridges_tarjan(self.g)
-        return len(bridges) > 0
-
-    def has_bridge_naive(self):
-        bridges = find_bridges_naive(self.g)
-        return len(bridges) > 0
-
-    def is_bridge_tarjan(self, v1, v2):
-        bridges = find_bridges_tarjan(self.g)
-        return (v1, v2) in bridges
-
-    def is_bridge_naive(self, v1, v2):
-        bridges = find_bridges_naive(self.g)
-        return (v1, v2) in bridges
-
     def clone(self):
         return MyGraph(g=self.g.copy())
-
-    def fleury(self, method="TARJAN"):
-        # Make sure the graph has either 0 or 2 odd vertices
-        if not self.is_connected():
-            return ["Não Euleriano"]
-        odd_vertices = 0
-        for i in range(self.g.vcount()):
-            if self.g.degree(i) % 2 != 0:
-                odd_vertices += 1
-        if odd_vertices != 0 and odd_vertices != 2:
-            return ["Não Euleriano"]
-
-        # Make a copy of the graph
-        graph = self
-
-        if (odd_vertices == 0):
-            # If the graph has 0 odd vertices, pick any vertex
-            start = i
-        else:
-            # If the graph has 2 odd vertices, pick the first one
-            for i in range(graph.g.vcount()):
-                if graph.g.degree(i) % 2 != 0:
-                    start = i
-                    break
-        path = graph.fleury_rec(graph, start, [start], method=method)
-        outp = "Euleriano" if path[0] == path[len(
-            path) - 1] else "Semi-Euleriano"
-        return [outp, path]
-
-    def fleury_rec(self, graph, v, path, method):
-        if graph.g.ecount() == 0:
-            return path
-        for e in graph.g.get_adjlist()[v]:
-            if not (graph.is_bridge_tarjan(v, e) if method == "TARJAN" else graph.is_bridge_naive(v, e)):
-                break
-        graph.g.delete_edges([(v, e)])
-        path.append(e)
-        return graph.fleury_rec(graph, e, path, method)
-
-    def export_graph(self, filename="output.gml", format="gml"):
-        ## Export graph to file on graphml format
-        self.g.write(filename, format)
-
-    def import_graph(self, filename="output.gml", format="gml"):
-        ## Import graph from file on graphml format
-        return MyGraph(g= Graph.Load(filename, format=format))
 
     def show(self):
         visual_style = {}
