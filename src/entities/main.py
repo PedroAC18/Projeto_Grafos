@@ -1,89 +1,138 @@
-from Graph import MyGraph
-import sys
-from datetime import datetime
+from src.entities.Graph import Graph
 
-sys.setrecursionlimit(200000000)
-#Representação utilizando Matriz/Lista de Adjacência
 
-g = MyGraph(full=5, n_vrt=5)
-print(g.get_adjacency_matrix())
-print(g.get_adjacency_list())
-g.show()
+def main():
+    num_vertices = int(input("Digite o número de vértices do grafo: "))
+    grafo = Graph(num_vertices)
 
-# Criação de grafos com X vértices
-g = MyGraph(n_vrt=5)
+    while True:
+        print("==== MENU ====")
+        print("1. Adicionar aresta")
+        print("2. Remover aresta")
+        print("3. Ponderar vértice")
+        print("4. Rotular vértice")
+        print("5. Rotular aresta")
+        print("6. Verificar adjacência entre vértices")
+        print("7. Verificar adjacência entre arestas")
+        print("8. Verificar incidência entre aresta e vértices")
+        print("9. Verificar existência de aresta")
+        print("10. Verificar quantidade de vértices e arestas")
+        print("11. Verificar se o grafo está vazio")
+        print("12. Verificar se o grafo está completo")
+        print("13. Representação do grafo utilizando Matriz de Adjacência")
+        print("14. Representação do grafo utilizando Lista de Adjacência")
+        print("0. Sair")
 
-# Adição de arestas
-g.add_edge(0, 1)
-g.add_edge(1, 2)
-g.add_edge(2, 3)
-g.add_edge(3, 4)
-# g.show()
+        opcao = int(input("Escolha uma opção: "))
 
-# Remoção de Arestas
-g.remove_edge(2, 3)
-# g.show()
+        if opcao == 1:
+            num_arestas = int(input("Digite o número de arestas a adicionar: "))
+            for _ in range(num_arestas):
+                origem = int(input("Digite o vértice de origem da aresta: "))
+                destino = int(input("Digite o vértice de destino da aresta: "))
+                grafo.adicionar_aresta(origem, destino)
+            print("Arestas adicionadas com sucesso!")
 
-# Ponderação de vértices
-g = MyGraph(n_vrt=4)
-g.set_vertex_label(0, "Pedro")
-g.set_vertex_label(1, "Luiz")
-g.set_vertex_label(2, "Samuel")
-g.set_vertex_label(3, "Victor")
-g.show()
+        elif opcao == 2:
+            origem = int(input("Digite o vértice de origem da aresta: "))
+            destino = int(input("Digite o vértice de destino da aresta: "))
+            grafo.remover_aresta(origem, destino)
+            print("Aresta removida com sucesso!")
 
-# Ponderação de arestas
-g = MyGraph(n_vrt=3)
-g.add_edge(0, 1)
-g.add_edge(1, 2)
-g.set_edge_label(0, 1, "Teste")
-g.set_edge_label(1, 2, "Teste2")
-g.get_edge_label(1, 2)
-g.set_edge_val(1, 2, 5)
-g.set_edge_val(1, 2, 10)
-g.show()
+        elif opcao == 3:
+            vertice = int(input("Digite o vértice a ser ponderado: "))
+            peso = float(input("Digite o peso a ser atribuído ao vértice: "))
+            grafo.ponderar_vertice(vertice, peso)
+            print("Vértice ponderado com sucesso!")
 
-# Checagem de adjacência entre vértices
-g = MyGraph(n_vrt=3)
-g.add_edge(0, 1)
-g.add_edge(1, 2)
-print("Vértice 0 e 1 são adjacentes: ", g.is_vertices_adjacents(0, 1))
-print("Vértice 2 e 0 são adjacentes: ", g.is_vertices_adjacents(2, 0))
+        elif opcao == 4:
+            vertice = int(input("Digite o vértice a ser rotulado: "))
+            rotulo = input("Digite o rótulo a ser atribuído ao vértice: ")
+            grafo.rotular_vertice(vertice, rotulo)
+            print("Vértice rotulado com sucesso!")
 
-# Checagem de adjacência entre arestas
-g = MyGraph(n_vrt=4)
-g.add_edge(0, 1)
-g.add_edge(1, 2)
-g.add_edge(2, 3)
-print("Arestas são adjacentes: ", g.is_edges_adjacents(0, 1, 1, 2))
-print("Arestas são adjacentes: ", g.is_edges_adjacents(0, 3, 2, 3))
+        elif opcao == 5:
+            origem = int(input("Digite o vértice de origem da aresta: "))
+            destino = int(input("Digite o vértice de destino da aresta: "))
+            rotulo = input("Digite o rótulo a ser atribuído à aresta: ")
+            grafo.rotular_aresta(origem, destino, rotulo)
+            print("Aresta rotulada com sucesso!")
 
-# Checagem da existência de arestas
-g = MyGraph(n_vrt=4)
-g.add_edge(0, 1)
-g.add_edge(1, 2)
-g.add_edge(2, 3)
-print("Existe aresta: ", g.edge_exists(0, 1))
-print("Existe aresta: ", g.edge_exists(1, 3))
+        elif opcao == 6:
+            vertice1 = int(input("Digite o primeiro vértice: "))
+            vertice2 = int(input("Digite o segundo vértice: "))
+            adjacencia = grafo.verificar_adjacencia_vertice(vertice1, vertice2)
+            if adjacencia:
+                print("Os vértices são adjacentes.")
+            else:
+                print("Os vértices não são adjacentes.")
 
-# Checagem de quantidade de vértices e arestas
-g = MyGraph(n_vrt=5)
-g.add_edge(0, 1)
-g.add_edge(1, 2)
-g.add_edge(2, 3)
-g.add_edge(3, 4)
-print(g.vertex_count())
-print(g.edges_count())
+        elif opcao == 7:
+            origem = int(input("Digite o vértice de origem da aresta: "))
+            destino = int(input("Digite o vértice de destino da aresta: "))
+            adjacencia = grafo.verificar_adjacencia_aresta(origem, destino)
+            if adjacencia:
+                print("As arestas são adjacentes.")
+            else:
+                print("As arestas não são adjacentes.")
 
-# Checagem de grafo vazio
-g = MyGraph(n_vrt=5)
-g.add_edge(0, 1)
-print(g.is_graph_empty())
-g.remove_edge(0, 1)
-print(g.is_graph_empty())
+        elif opcao == 8:
+            origem = int(input("Digite o vértice de origem da aresta: "))
+            destino = int(input("Digite o vértice de destino da aresta: "))
+            vertice = int(input("Digite o vértice a ser verificado: "))
+            incidencia = grafo.verificar_incidencia(origem, destino, vertice)
+            if incidencia:
+                print("A aresta está incidindo no vértice.")
+            else:
+                print("A aresta não está incidindo no vértice.")
 
-# Checagem de grafo completo
-g = MyGraph(n_vrt=5, full=True)
-print(g.is_full_graph())
-g.remove_edge(0, 1)
-print(g.is_full_graph())
+        elif opcao == 9:
+            origem = int(input("Digite o vértice de origem da aresta: "))
+            destino = int(input("Digite o vértice de destino da aresta: "))
+            existencia = grafo.verificar_existencia_aresta(origem, destino)
+            if existencia:
+                print("A aresta existe no grafo.")
+            else:
+                print("A aresta não existe no grafo.")
+
+        elif opcao == 10:
+            num_vertices = grafo.verificar_quantidade_vertices()
+            num_arestas = grafo.verificar_quantidade_arestas()
+            print("Quantidade de vértices:", num_vertices)
+            print("Quantidade de arestas:", num_arestas)
+
+        elif opcao == 11:
+            vazio = grafo.verificar_grafo_vazio()
+            if vazio:
+                print("O grafo está vazio.")
+            else:
+                print("O grafo não está vazio.")
+
+        elif opcao == 12:
+            completo = grafo.verificar_grafo_completo()
+            if completo:
+                print("O grafo está completo.")
+            else:
+                print("O grafo não está completo.")
+
+        elif opcao == 13:
+            matriz_adj = grafo.obter_matriz_adjacencia()
+            print("Matriz de Adjacência:")
+            for linha in matriz_adj:
+                print(linha)
+
+        elif opcao == 14:
+            lista_adj = grafo.obter_lista_adjacencia()
+            print("Lista de Adjacência:")
+            for vertice, vizinhos in enumerate(lista_adj):
+                print(f"Vértice {vertice}: {vizinhos}")
+        elif opcao == 0:
+            print("Encerrando o programa...")
+            break
+
+        else:
+            print("Opção inválida. Por favor, tente novamente.")
+
+
+if __name__ == '__main__':
+    main()

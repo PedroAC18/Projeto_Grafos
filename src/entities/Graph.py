@@ -1,119 +1,98 @@
-import igraph as ig
-import matplotlib.pyplot as plt
-from igraph import Graph
+class Graph:
+    def __init__(self, num_vertices):
+        self.num_vertices = num_vertices
+        self.matriz_adj = [[0] * num_vertices for _ in range(num_vertices)]
+        self.lista_adj = [[] for _ in range(num_vertices)]
 
-class MyGraph:
-    def __init__(self, g=None, n_vrt=None, n_edges=None, directed=False, full=False, random=False, ring=False):
-        if g is not None:
-            self.g = g
-        elif ring:
-            self.g = Graph.Ring(n_vrt, directed=directed)
-        elif random:
-            # Generate a random graph with n_vrt vertices and n_edges edges with loop disabled and parallel
-            self.g = Graph.Erdos_Renyi(n=n_vrt, m=n_edges, directed=directed, loops=False)
-        elif full:
-            self.g = Graph.Full(n=n_vrt, directed=directed)
-        else:
-            self.g = Graph(n=n_vrt, directed=directed)
-        self.g.vs["label"] = range(self.g.vcount())
-        self.g.vs["weight"] = self.g.vs["label"]
+    def adicionar_aresta(self, origem, destino, peso=1):
+        self.matriz_adj[origem][destino] = peso
+        self.lista_adj[origem].append((destino, peso))
 
-    def add_edge(self, v1, v2):
-        self.g.add_edges([(v1, v2)])
+    def remover_aresta(self, origem, destino):
+        self.matriz_adj[origem][destino] = 0
+        for i, (vertice, peso) in enumerate(self.lista_adj[origem]):
+            if vertice == destino:
+                del self.lista_adj[origem][i]
+                break
 
-    def remove_edge(self, v1, v2):
-        self.g.delete_edges([(v1, v2)])
+    def ponderar_vertice(self, vertice, peso):
+        self.lista_adj[vertice] = peso
 
-    def get_vertex_custom_attr(self, n_vertex, attr):
-        return self.g.vs[n_vertex][attr]
+    def rotular_vertice(self, vertice, rotulo):
+        self.lista_adj[vertice] = rotulo
 
-    def set_vertex_custom_attr(self, n_vertex, attr, val):
-        self.g.vs[n_vertex][attr] = val
+    def ponderar_aresta(self, origem, destino, peso):
+        self.matriz_adj[origem][destino] = peso
+        for i, (vertice, peso) in enumerate(self.lista_adj[origem]):
+            if vertice == destino:
+                self.lista_adj[origem][i] = (vertice, peso)
+                break
 
-    def get_vertex_label(self, n_vertex):
-        return self.g.vs[n_vertex]["label"]
+    def rotular_aresta(self, origem, destino, rotulo):
+        self.matriz_adj[origem][destino] = rotulo
 
-    def set_vertex_label(self, n_vertex, text):
-        self.g.vs[n_vertex]["label"] = text
+    def verificar_adjacencia_vertice(self, vertice1, vertice2):
+        return self.matriz_adj[vertice1][vertice2] != 0
 
-    def set_vertex_value(self, n_vertex, val):
-        self.g.vs[n_vertex]["weight"] = val
-
-    def set_edge_label(self, v1, v2, text):
-        self.g.es[self.g.get_eid(v1, v2)]["label"] = text
-
-    def set_edge_val(self,  v1, v2, val):
-        self.g.es[self.g.get_eid(v1, v2)]["weight"] = val
-
-    def get_edge_label(self,  v1, v2):
-        return self.g.es[self.g.get_eid(v1, v2)]["label"]
-
-    def get_edge_val(self,  v1, v2):
-        return self.g.es[self.g.get_eid(v1, v2)]["weight"]
-
-    def vertex_with_value_exists(self, v):
-        for i in range(self.g.vcount()):
-            if self.g.vs[i]["weight"] == v:
+    def verificar_adjacencia_aresta(self, origem, destino):
+        for vertice, _ in self.lista_adj[origem]:
+            if vertice == destino:
                 return True
         return False
 
-    def vertex_with_label_exists(self, v):
-        for i in range(self.g.vcount()):
-            if self.g.vs[i]["label"] == v:
-                return True
-        return False
-
-    def get_adjacency_matrix(self):
-        return self.g.get_adjacency()
-
-    def get_adjacency_list(self):
-        return self.g.get_adjlist()
-
-    def is_vertices_adjacents(self, v1, v2):
-        if self.g.are_connected(v1, v2):
+    def verificar_incidencia(self, origem, destino, vertice):
+        if self.matriz_adj[origem][destino] != 0 and self.matriz_adj[origem][vertice] != 0:
             return True
         return False
 
-    def is_edges_adjacents(self, v1, v2, v3, v4):
-        return self.g.are_connected(v2, v4) and self.g.are_connected(v1, v2) or self.g.are_connected(v1, v4) and self.g.are_connected(v3, v4)
+    def verificar_existencia_aresta(self, origem, destino):
+        return self.matriz_adj[origem][destino] != 0
 
-    def vertex_exists(self, v):
-        return v in self.g.vs
+    def verificar_quantidade_vertices(self):
+        return self.num_vertices
 
-    def edge_exists(self, v1, v2):
-        return self.g.are_connected(v1, v2)
+    def verificar_quantidade_arestas(self):
+        count = 0
+        for linha in self.matriz_adj:
+            for valor in linha:
+                if valor != 0:
+                    count += 1
+        return count
 
-    def vertex_count(self):
-        return self.g.vcount()
-
-    def edges_count(self):
-        return self.g.ecount()
-
-
-    def is_graph_empty(self):
-        return self.g.ecount() == 0 and self.g.vcount() > 0
-
-    def is_full_graph(self):
-        for i in range(self.g.vcount()):
-            if self.g.degree(i) != self.g.vcount() - 1:
-                return False
+    def verificar_grafo_vazio(self):
+        for linha in self.matriz_adj:
+            for valor in linha:
+                if valor != 0:
+                    return False
         return True
 
-    def clone(self):
-        return MyGraph(g=self.g.copy())
+    def verificar_grafo_completo(self):
+        for linha in self.matriz_adj:
+            for valor in linha:
+                if valor == 0:
+                    return False
+        return True
 
-    def show(self):
-        visual_style = {}
-        visual_style["vertex_size"] = 0.5
-        visual_style["vertex_color"] = "white"
-        visual_style["edge_width"] = 0.5
-        visual_style["edge_color"] = "black"
-        visual_style["edge_size"] = 0.1
-        visual_style["edge_align_label"] = True
+    def obter_matriz_adjacencia(self):
+        """
+        Retorna a representação do grafo utilizando a matriz de adjacência.
 
-        tx, ax = plt.subplots()
-        ig.plot(self.g, layout="kk", target=ax, **visual_style)
-        plt.show()
+        Returns:
+            list: Matriz de adjacência do grafo.
 
-    def is_connected(self):
-        return self.g.is_connected()
+        Exemplo:
+            matriz_adj = grafo.obter_matriz_adjacencia()
+        """
+        return self.matriz_adj
+
+    def obter_lista_adjacencia(self):
+        """
+        Retorna a representação do grafo utilizando a lista de adjacência.
+
+        Returns:
+            list: Lista de adjacência do grafo.
+
+        Exemplo:
+            lista_adj = grafo.obter_lista_adjacencia()
+        """
+        return self.lista_adj
